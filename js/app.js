@@ -53,6 +53,22 @@ function shuffle(array) {
     return array;
 }
 
+/* we want the card to change color and show icon when its clicked so it means to:
+*   - loop on all li which class is card
+*   - add an eventListener on the click
+*   - modify class of li to add open show
+*/
+addClick = () => {
+    document.querySelectorAll(".card").forEach((clickedCard) => {
+        clickedCard.addEventListener("click", (event) => {
+            clickedCard.className = "card open show";
+            console.log(clickedCard);
+        })
+
+    }, false);
+}
+addClick();
+
 // card is clicked, we display the symbol and we add this card in a list of open card 
 
 /*
