@@ -7,7 +7,7 @@ const cards = [
     "fa-diamond", "fa-paper-plane-o", "fa-anchor", "fa-bolt", "fa-cube", "fa-leaf", "fa-bicycle", "fa-bomb"
 ];
 
-
+const openShowCards = [];
 /*
  * Display the cards on the page
  *   - shuffle the list of cards using the provided "shuffle" method below
@@ -57,19 +57,31 @@ function shuffle(array) {
 *   - loop on all li which class is card
 *   - add an eventListener on the click
 *   - modify class of li to add open show
+*   TODO: find a way to better refactor this
 */
-addClick = () => {
+
+
+addcardListener = () => {
     document.querySelectorAll(".card").forEach((clickedCard) => {
-        clickedCard.addEventListener("click", (event) => {
+        clickedCard.addEventListener("click", () => {
             clickedCard.className = "card open show";
-            console.log(clickedCard);
+            openShowCards.push(clickedCard); //we store the clickedcard in the openShowCards array
+            
+            if (openShowCards.length > 1) {
+                openShowCards.forEach(element => {
+                    console.log(element.firstChild);
+                    //here we need to compare if the two cards match
+                });
+              
+            }
         })
 
     }, false);
+    
 }
-addClick();
+addcardListener();
 
-// card is clicked, we display the symbol and we add this card in a list of open card 
+
 
 /*
  * set up the event listener for a card. If a card is clicked:
