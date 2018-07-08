@@ -1,6 +1,11 @@
 /*
  * Create a list that holds all of your cards
  */
+// It would be better to fetch data froma json or a folder of img 
+const cards = [
+    "fa-diamond", "fa-paper-plane-o", "fa-anchor", "fa-bolt", "fa-cube", "fa-leaf", "fa-bicycle", "fa-bomb",
+    "fa-diamond", "fa-paper-plane-o", "fa-anchor", "fa-bolt", "fa-cube", "fa-leaf", "fa-bicycle", "fa-bomb"
+];
 
 
 /*
@@ -9,6 +14,29 @@
  *   - loop through each card and create its HTML
  *   - add each card's HTML to the page
  */
+
+
+// let's shuffle the cards before creating the grid!
+shuffle(cards);
+
+// create the grid and add it to the page
+
+(createHtmlGrid = () => {
+    const ul = document.getElementById('deck');
+    // we loop on the array in order to create as much li>span as there are cards
+    cards.forEach(function (element) {
+
+        const li = document.createElement('li');
+        li.className = "card";
+        const span = document.createElement('span');
+
+        span.className = "fa " + element;
+        li.append(span);
+        ul.append(li);
+    });
+})(); // we run the function, one other solution would have been to write createHtmlGrid(); on next line instead
+
+     
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -25,6 +53,7 @@ function shuffle(array) {
     return array;
 }
 
+// card is clicked, we display the symbol and we add this card in a list of open card 
 
 /*
  * set up the event listener for a card. If a card is clicked:
