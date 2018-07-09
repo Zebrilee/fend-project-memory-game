@@ -1,26 +1,20 @@
 /*
  * Create a list that holds all of your cards
  */
-// It would be better to fetch data froma json or a folder of img 
+
+ // declaration of all the variables we need
 const cards = [
     "fa-diamond", "fa-paper-plane-o", "fa-anchor", "fa-bolt", "fa-cube", "fa-leaf", "fa-bicycle", "fa-bomb",
     "fa-diamond", "fa-paper-plane-o", "fa-anchor", "fa-bolt", "fa-cube", "fa-leaf", "fa-bicycle", "fa-bomb"
-];
-
-const openShowCards = [];
-/*
- * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
- *   - loop through each card and create its HTML
- *   - add each card's HTML to the page
- */
+],
+deck = document.querySelector('#deck'),
+toggledCardArray = [];
 
 
 // let's shuffle the cards before creating the grid!
 shuffle(cards);
 
-// create the grid and add it to the page
-
+// create HTML grid function
 (createHtmlGrid = () => {
     const ul = document.getElementById('deck');
     // we loop on the array in order to create as much li>span as there are cards
@@ -36,7 +30,6 @@ shuffle(cards);
     });
 })(); // we run the function, one other solution would have been to write createHtmlGrid(); on next line instead
 
-     
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -53,33 +46,44 @@ function shuffle(array) {
     return array;
 }
 
-/* we want the card to change color and show icon when its clicked so it means to:
-*   - loop on all li which class is card
-*   - add an eventListener on the click
-*   - modify class of li to add open show
-*   TODO: find a way to better refactor this
-*/
-
-
-addcardListener = () => {
-    document.querySelectorAll(".card").forEach((clickedCard) => {
-        clickedCard.addEventListener("click", () => {
-            clickedCard.className = "card open show";
-            openShowCards.push(clickedCard); //we store the clickedcard in the openShowCards array
-            
-            if (openShowCards.length > 1) {
-                openShowCards.forEach(element => {
-                    console.log(element.firstChild);
-                    //here we need to compare if the two cards match
-                });
-              
-            }
-        })
-
-    }, false);
-    
+// Toggle function 
+toggledCard = (clickedCard) => {
+    clickedCard.classList.toggle('open');
+    clickedCard.classList.toggle('show');
 }
-addcardListener();
+
+// Add toggled card to an array function
+addToggledCards = (clickedCard) => {
+    toggledCardArray.push(clickedCard);
+}
+
+// check if two cards match function
+matchCard = () => {
+    if(toggledCardArray[0].firstChild.className === toggledCardArray[1].firstChild.className){
+        console.log('yataaaa');
+    }else{
+        console.log('no match');
+    };
+}
+
+// card event listener function 
+addCardEventListener = () => {
+    deck.addEventListener('click', event => {
+       const clickedCard = event.target;
+       if (clickedCard.classList.contains('card') && toggledCardArray.length < 2){
+           toggledCard(clickedCard);
+           addToggledCards(clickedCard);
+           if (toggledCardArray.length === 2){
+               // here we need to check if card are matching
+               matchCard();
+           }
+        }
+        
+        });
+}
+addCardEventListener();
+
+
 
 
 
