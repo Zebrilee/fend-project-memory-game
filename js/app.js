@@ -7,8 +7,11 @@ const cards = [
     "fa-diamond", "fa-paper-plane-o", "fa-anchor", "fa-bolt", "fa-cube", "fa-leaf", "fa-bicycle", "fa-bomb",
     "fa-diamond", "fa-paper-plane-o", "fa-anchor", "fa-bolt", "fa-cube", "fa-leaf", "fa-bicycle", "fa-bomb"
 ],
-deck = document.querySelector('#deck'),
-toggledCardArray = [];
+deck = document.querySelector('#deck');
+
+let matchingCards = [],
+pairNumberReached = 0,
+moves = 0;
 
 
 // let's shuffle the cards before creating the grid!
@@ -46,36 +49,19 @@ function shuffle(array) {
     return array;
 }
 
-// Toggle function 
-toggledCard = (clickedCard) => {
-    clickedCard.classList.toggle('open');
-    clickedCard.classList.toggle('show');
-}
 
-// Add toggled card to an array function
-addToggledCards = (clickedCard) => {
-    toggledCardArray.push(clickedCard);
-}
-
-// check if two cards match function
-matchCard = () => {
-    if(toggledCardArray[0].firstChild.className === toggledCardArray[1].firstChild.className){
-        console.log('yataaaa');
-    }else{
-        console.log('no match');
-    };
-}
 
 // card event listener function 
 addCardEventListener = () => {
     deck.addEventListener('click', event => {
        const clickedCard = event.target;
-       if (clickedCard.classList.contains('card') && toggledCardArray.length < 2){
-           toggledCard(clickedCard);
-           addToggledCards(clickedCard);
-           if (toggledCardArray.length === 2){
+       if (isClickValid){
+           turnedOverCard(clickedCard);
+           cardToCompare(clickedCard);
+           if (matchingCards.length === 2){
                // here we need to check if card are matching
-               matchCard();
+               matchCard(clickedCard);
+               addCountMove();
            }
         }
         
@@ -85,7 +71,60 @@ addCardEventListener();
 
 
 
+// add class to card that are turned over
+turnedOverCard = (card) => {
+    card.classList.toggle('open');
+    card.classList.toggle('show');
+}
 
+// Add turned over card in an array to compare them
+cardToCompare = (clickedCard) => {
+    matchingCards.push(clickedCard);
+}
+
+isClickValid = (clickTarget) => {
+    return (
+        clickTarget.classList.contains('card') &&
+        !clickTarget.classList.contains('match') &&
+        toggledCards.length < 2 &&
+        !toggledCards.includes(clickTarget)
+    );
+}
+
+
+// check if two cards match function
+matchCard = () => {
+    const pairOfCard = 8;
+    
+    if (matchingCards[0].firstChild.className === 
+        matchingCards[1].firstChild.className) {
+        matchingCards[0].classList.toggle('match');
+        matchingCards[1].classList.toggle('match');
+        matchingCards = [];
+        pairNumberReached++;
+        if (pairNumberReached === pairOfCard) {
+            //gameOver();
+            console.log('the end');
+        }
+    } else{
+        setTimeout(() => {
+        turnedOverCard(matchingCards[0]);
+        turnedOverCard(matchingCards[1]);
+        matchingCards = [];
+        }, 1000);
+        
+    };
+}
+
+// gameOver = () => {
+//     console.log('the end');
+// }
+
+addCountMove = () => {
+    moves++;
+    const movesText = document.querySelector('.moves');
+    movesText.innerHTML = moves;
+}
 
 /*
  * set up the event listener for a card. If a card is clicked:
