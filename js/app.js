@@ -5,17 +5,16 @@ const cards = [
 ],
 deck  = document.querySelector('#deck'),
 stars = document.querySelectorAll('.stars li'),
-clock = document.querySelector('.clock');
+timer = document.querySelector('.clock');
 
 let matchingCards = [],
     pairNumberReached = 0,
     moves = 0,
     clockDelay,
-    time = 0,
+    starRating = 3,   
     timeLapse,
-    timerOff = true;
-
-    let seconds = 0,
+    timerOff = true,
+    seconds = 0,
     minutes = 0,
     hours = 0;
 
@@ -27,7 +26,6 @@ shuffle(cards);
     const ul = document.getElementById('deck');
     // we loop on the array in order to create as much li>span as there are cards
     cards.forEach(function (element) {
-
         const li = document.createElement('li');
         li.className = "card";
         const span = document.createElement('span');
@@ -50,11 +48,8 @@ function shuffle(array) {
         array[currentIndex] = array[randomIndex];
         array[randomIndex] = temporaryValue;
     }
-
     return array;
 }
-
-
 
 // card event listener function 
 addCardEventListener = () => {
@@ -63,25 +58,23 @@ addCardEventListener = () => {
     deck.addEventListener('click', event => {
         const clickedCard = event.target;
 
-
         if (timerOff) {
             timerOff = false;
             startTimer();
         }
-
+        
         displayCardSymbol(clickedCard);
         matchingCards.push(clickedCard); // array was empty first
         if (matchingCards.length === 2) {
             // here we need to check if card are matching
             matchCard(clickedCard);
             addCountMove();
-            starRating();
+            setStars();
         }
    
     });
 }
 addCardEventListener();
-
 
 
 // add class to card that are turned over
@@ -92,8 +85,7 @@ displayCardSymbol = (card) => {
 
 // check if two cards match function
 matchCard = () => {
-    const pairOfCard = 4;
-    
+    const pairOfCard = 8;
     
     if (matchingCards[0].firstChild.className === 
         matchingCards[1].firstChild.className) {
@@ -101,11 +93,9 @@ matchCard = () => {
         matchingCards[1].classList.toggle('match');
         matchingCards = [];
         pairNumberReached++;
+        
         if (pairNumberReached === pairOfCard) {
-            gameOver();
-            console.log('the end');
-
-            
+            gameOver()
         }
     } else{
         setTimeout(() => {
@@ -126,8 +116,6 @@ addCountMove = () => {
 
 // timer function 
 startTimer = () => {
-    const timer = document.querySelector('.clock');
-
     clockDelay = setInterval(function () {
         if (seconds < 10) {
             timer.innerHTML = `${minutes}:0${seconds}`;
@@ -147,9 +135,12 @@ startTimer = () => {
     }, 1000);
 }
 
-setStars = () => {
+stopTimer = () => {
+    clearInterval(clockDelay);
+    timeLapse = timer.innerHTML;
+}
 
-    let starRating = 3;
+setStars = () => {
     if (moves <= 8) {
         starRating = 3;
     } else if (moves > 8 && moves <= 15) {
@@ -157,25 +148,6 @@ setStars = () => {
     } else {
         starRating = 1;
     }
-}
-
-starRating = () =>{
-    if (moves === 6 || moves === 8) {
-        setStars();
-    }
-}
-
-stopTimer = () => {
-    clearInterval(clockDelay);
-    timeLapse = timer.innerHTML;
-}
-
-gameOver = () => {
-    console.log('the end');
-    const modal = document.querySelector('.overlay');
-    modal.classList.add('show-popup');
-    //stopTimer();
-    messageScore();
 }
 
 // create Modal 
@@ -204,13 +176,13 @@ createHtmlModal = () => {
     movesNumber.className = 'movesNumber';
     resultStats.append(movesNumber);
 
-    const timeDuration = document.createElement('p');
-    timeDuration.className = ' timeDuration';
-    resultStats.append(timeDuration);
+    const timeLapse = document.createElement('p');
+    timeLapse.className = 'time';
+    resultStats.append(timeLapse);
 
-    const starRating = document.createElement('p');
-    starRating.className = 'starRating';
-    resultStats.append(starRating);
+    const starParagraph = document.createElement('p');
+    starParagraph.className = 'star';
+    resultStats.append(starParagraph);
 
     const button = document.createElement('button');
     button.innerHTML = 'New game'
@@ -223,12 +195,18 @@ createHtmlModal = () => {
 createHtmlModal();
 
 
-messageScore = () => {
-    
+showScore = () => {
     //showing move, rating, time on modal
     document.querySelector(".movesNumber").innerHTML = 'Moves : ' + moves;
-    document.querySelector(".starRating").innerHTML = 'Stars : ' + starRating;
-    document.querySelector(".timeDuration").innerHTML = 'Time :  ' + timeDuration;
+    document.querySelector(".star").innerHTML = 'Stars : ' + starRating;
+    document.querySelector(".time").innerHTML = 'Time :  ' + timeLapse;
+}
+
+gameOver = () => {
+    const modal = document.querySelector('.overlay');
+    modal.classList.add('show-popup');
+    stopTimer();
+    showScore();
 }
 
 resetMoves = () => {
@@ -236,29 +214,35 @@ resetMoves = () => {
     document.querySelector('.moves').innerHTML = moves;
 }
 
+resetTime = () => {
+    seconds = 0;
+    minutes = 0;
+    hours = 0;
+    timer.innerHTML = "0:00";
+    clearInterval(clockDelay);
+}
+
+resetCards = () => {
+   const cardClass =  document.querySelectorAll("#deck li");
+   for (value of cardClass){
+        value.classList.remove('match', 'open', 'show')
+   }
+  
+}
 
 resetGame = () => {
-    //resetClockAndTime();
+    matchingCards = [];
     resetMoves();
-    resetStars();
-    // resetCards();
+    resetTime();
+    starRating = 3;
+    resetCards();
     shuffle(cards);
 }
 document.querySelector('.restart').addEventListener('click', resetGame);
 
-closeModal = () =>{
+newGame = () =>{
     resetGame();
     modal = document.querySelector('.overlay');
     modal.classList.remove("show-popup");
 }
-
-/*
- * set up the event listener for a card. If a card is clicked:
- *  - display the card's symbol (put this functionality in another function that you call from this one)
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
- *  - if the list already has another card, check to see if the two cards match
- *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
- *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
- *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
- *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
- */
+document.querySelector('.new-game').addEventListener('click', newGame);
